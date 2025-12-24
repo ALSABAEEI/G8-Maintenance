@@ -9,13 +9,16 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        User::create([
-            'UserName' => 'test_user',
-            'email' => 'test@example.com',
-            'password' => bcrypt('password123'),
-            'Role' => 'admin',
-            'Program' => 'Software Engineering',
-        ]);
+        User::updateOrCreate(
+            ['Email' => 'test@example.com'],
+            [
+                'UserName' => 'test_user',
+                'password' => 'password123',
+                'Role' => 'admin',
+                'Program' => 'Software Engineering',
+                'password_changed' => false,
+            ]
+        );
     }
 }
 
