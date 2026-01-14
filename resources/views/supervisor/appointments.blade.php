@@ -19,7 +19,7 @@
         'end' => $slot->end_time,
     ])->values();
 @endphp
-
+ 
 <style>
     .time-picker {
         position: relative;
