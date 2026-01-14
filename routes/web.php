@@ -31,9 +31,15 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Password Reset Routes
+Route::get('/password/forgot', [AuthController::class, 'showForgotPasswordForm'])->name('password.forgot');
+Route::post('/password/email', [AuthController::class, 'sendResetLink'])->name('password.email');
+Route::get('/password/reset/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('password.update');
+
 // Routes for changing passwords
 Route::get('/password/change', [PasswordChangeController::class, 'edit'])->name('password.change');
-Route::post('/password/change', [PasswordChangeController::class, 'update'])->name('password.update');
+Route::post('/password/change', [PasswordChangeController::class, 'update'])->name('password.change.update');
 
 // Group routes with `auth` and `CheckPasswordChanged` middleware
 Route::middleware(['auth', \App\Http\Middleware\CheckPasswordChanged::class])->group(function () {
@@ -71,11 +77,11 @@ Route::middleware(['auth', \App\Http\Middleware\CheckPasswordChanged::class])->g
     Route::get('/admin/reports/users/export', [ReportController::class, 'exportUserReport'])->name('reports.users.export');
     Route::get('/admin/reports/users/export/pdf', [ReportController::class, 'exportUserReportPDF'])->name('reports.users.export.pdf');
 
- Route::get('/admin/topics', [AdminController::class, 'viewAllTopics'])->name('admin.topics');
+    Route::get('/admin/topics', [AdminController::class, 'viewAllTopics'])->name('admin.topics');
 
     // Supervisor Post Topics
     Route::middleware(['auth', CheckTimeFrame::class . ':Supervisor Post Topics'])->group(function () {
-        
+
         Route::get('/topics/create', [TopicController::class, 'create'])->name('topics.create');
         Route::post('/topics', [TopicController::class, 'store'])->name('topics.store');
     });
@@ -119,15 +125,6 @@ Route::middleware(['auth', \App\Http\Middleware\CheckPasswordChanged::class])->g
         Route::get('/student/timeframes', [App\Http\Controllers\TimeFrameController::class, 'viewStudentTimeframes'])->name('student.timeframes');
         Route::get('/supervisor/timeframes', [App\Http\Controllers\TimeFrameController::class, 'viewSupervisorTimeframes'])->name('supervisor.timeframes');
     });
-
-
-
-
-
-
-
-
-
 });
 
 //Appointment

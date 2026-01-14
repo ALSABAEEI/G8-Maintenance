@@ -12,15 +12,38 @@ class ReportController extends Controller
     /**
      * Display the user report grouped by program.
      */
-    public function userReport()
+    public function userReport(Request $request)
     {
-        // Fetch users grouped by program
+        // Get all unique programs for filter dropdown (exclude Default and admins)
+        $allPrograms = User::distinct()
+            ->where('Role', '!=', 'admin')
+            ->where('Program', '!=', 'Default')
+            ->whereNotNull('Program')
+            ->pluck('Program')
+            ->filter()
+            ->values();
+
+        // Query users based on filter (exclude admins and Default program)
+        $query = User::where('Role', '!=', 'admin')
+            ->where('Program', '!=', 'Default')
+            ->whereNotNull('Program');
+
+        if ($request->filled('program')) {
+            $query->where('Program', $request->program);
+        }
+
+        $users = $query->orderBy('Program')->orderBy('UserName')->get();
+
+        // Fetch users grouped by program (for PDF export, exclude admins and Default)
         $usersByProgram = User::select('Program')
             ->selectRaw('COUNT(*) as total')
+            ->where('Role', '!=', 'admin')
+            ->where('Program', '!=', 'Default')
+            ->whereNotNull('Program')
             ->groupBy('Program')
             ->get();
 
-        return view('admin.reports.users', compact('usersByProgram'));
+        return view('admin.reports.users', compact('users', 'allPrograms', 'usersByProgram'));
     }
 
     /**
